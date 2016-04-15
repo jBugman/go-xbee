@@ -9,7 +9,7 @@ type frame struct {
 }
 
 func NewFrame(data []byte) frame {
-	return frame{data}
+	return frame{data: data}
 }
 
 func (f frame) checksum() byte {
@@ -23,12 +23,12 @@ func (f frame) checksum() byte {
 func (f frame) Bytes() []byte {
 	buf := new(bytes.Buffer)
 	buf.WriteByte(START_BYTE)
-
-	size := len(f.data)
-	buf.WriteByte(byte(size >> 8))
-	buf.WriteByte(byte(size & 0xFF))
-
+	buf.Write(intToBytes(len(f.data)))
 	buf.Write(f.data)
 	buf.WriteByte(f.checksum())
 	return buf.Bytes()
+}
+
+func intToBytes(x int) []byte {
+	return []byte{byte(x >> 8), byte(x & 0xFF)}
 }
